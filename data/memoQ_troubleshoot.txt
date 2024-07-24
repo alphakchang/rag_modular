@@ -1,0 +1,96 @@
+1. memoQ stops working properly…empty your temp folder
+Empty temp folder
+If memoQ stops working properly, the first thing to do is to empty your temp folder. By default it is under your user profile in \AppData\Local\Temp (C:\Users\<Your user name>\AppData\Local\Temp)
+
+ You can download and unzip the attached script on your desktop.
+
+After unzipping the script, close memoQ and run the script, then try using memoQ again.
+
+delete temp.7z (Please download from here.)
+
+Check you don't have pinned resources from old (non-existing) servers
+Click Manage logins, select the old server, e.g. queens.alphacrc.com, and then Forget server completely.
+
+Afterwards, open the Resource console and verify that all pinned resources from the server has disappeared. If not, unpin them manually.
+
+2. Error - The order of inline tags is incorrect
+When translating or running a QA check on your file, you get the error The order of inline tags is incorrect, but it is exactly the same as in the source
+
+ 
+
+By default memoQ flags what they call "overlapping tags", that is tag sequences that don’t have a symmetrical structure like <1><2><3>Blabla</3></2></1>, but instead <1><2><3>Blabla</1></2></3> or similar.
+
+ 
+
+(In the example above, the order is <29><75></29><33></75></33>, with <75></29> overlapping; a correct sequence would be <29><75><33>…</29></75></33>, or <29>…</29><75><33>…</75></33>)
+
+ 
+
+The warning can be deactivated by deselecting Check for overlapping paired tags in the project's QA settings (Project home->Settings->QA settings)
+
+3. Other tag issues
+You might get warnings in QA about missing or extra tags, but when looking at them, they all look fine: tags in the target looks exactly like the source.
+
+memoQ doesn't flag a tag issue if there isn't one, so it is most likely the issue is difficult to see. Make sure you have set tag display to Long, so you can see all the data inside the tags. <p...> tags often have a number like <p id="12"> and the number might be the difference.
+
+In that case, change the tags so the numbers match - usually memoQ will do this as a match is inserted from the TM.
+
+Example: Without the tag display set to Long, the error looks like it is a FP
+
+
+
+But when set to Long, you can see the difference: source has a tag with ID=13, while target has ID=3, so it is an error.
+
+4. A TM or TB is not accessible or missing
+It can happen that you see an error as a translator, or a linguist contacts you as a PM, saying that segments can't be saved into the TM. There are two possible reasons for this message to appear.
+
+1. The TM got corrupted
+Look under Translation Memories in the project (Translator) or open the project for management (PM), and go under Translation Memories tab.
+
+Check the status of the TM. They should all have a green checkmark.
+
+If one has a lighting symbol next to it, it means it's corrupted, see below:
+
+
+
+To repair it, simply right-click on the resource, and select 'Repair Resource'
+
+
+
+Refresh to make sure the resource has been repaired successfully.
+
+NOTE: Translators only have permissions to repair WIP TMs (the one set as Working in the project) - but if the WIP is corrupted, the translations will not be saved; if a Master is corrupted, they will not get any matches from that TM, but can still save the translations.
+
+If you repair the TM as Pm on the server, you should ask the linguists to synchronise the project with the server for them to be able to work correctly again.
+
+2. There is no working TM
+Open the project for management, and go under translation memories tab.
+
+Check that you have one Working and one Master TM per target language. 
+If your view looks like the below, either the project was wrapped up and the working TM got deleted, or the project got corrupted (due to server issue for example). 
+No matter the reason, it needs to be fixed. 
+
+
+
+
+If your Project WIP TM is still attached to your project, select the TM, right-click under 'Type' and choose 'Set As Working'. Repeat for any language where no WIP is set.
+If your project WIP TM has been deleted, recreate one that you attach and set as working in your project. Repeat for any language where no WIP is set.
+
+
+
+3. There are no TMs or TBs or some of them have disappeared
+Sometimes one or more TMs or TBs disappear, becomes unattached from the projects you have checked out. If you can't find them following the descriptions above, the easiest is to check out a new copy of the project. If you synchronise the current copy first, then new will be just like this one in terms of translation status (how much has been done), but all TMs and TBs will be attached again.
+
+Synchronise the current project, and close it
+Click Check out from server
+In the dialog change the default name of the project by adding v2 or NEW in the project name field (if you don't change the name, it wil just open the old one). Changing the name of you local copy makes no difference to the server project, it is just to allow you to get a new copy, and to distinguish the new from the old copy.
+NOTE: Checking out a new copy of the project resolves most issues
+
+5. TM or TB can't be edited
+If a translator or reviewer has to implement global changes in a TM, they need Admin access. Normally they have Update rights, so they can add new entries.
+
+The rights can be changed by selecting the TM(s) and then Set permissions and either add a specific user, group or all in-house translators to give the Admin rights, and consider if this should be permanent or just temporary by adding a date under Expiration.
+
+For TBs the user need only Review access, not Admin to be able to edit an entry.
+
+@PMs: be very careful giving Admin access to a vendor. It is generally not recommended, but if you decide it is the best in a situation, make sure you only assign Admin rights for a day or two.
