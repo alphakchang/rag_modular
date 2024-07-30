@@ -18,3 +18,18 @@ def semantic_split(data: str) -> List:
     text_splitter = SemanticChunker(OpenAIEmbeddings())
     docs = text_splitter.create_documents([data])
     return docs
+
+def documents_semantic_split(documents) -> List:
+    """
+    Splitting a list of documents into semantically similar chunks
+
+    Arguments:
+        documents: A list of LangChain Document objects
+
+    Returns:
+        A list of chunks
+    """
+    text_splitter = SemanticChunker(OpenAIEmbeddings())
+    chunks = text_splitter.split_documents(documents)
+
+    return chunks
