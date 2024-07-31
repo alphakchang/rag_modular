@@ -3,9 +3,9 @@ from content_loaders import pdf_loader
 from text_chunkers import character_chunker, semantic_chunker
 from vector_db import pinecone_store
 from langchain_openai import ChatOpenAI
-from langchain import hub
-from langchain_core.output_parsers import StrOutputParser
-from langchain_core.runnables import RunnablePassthrough
+from chains import conversational_chain
+from langchain_core.messages import AIMessage, HumanMessage
+
 
 load_dotenv(find_dotenv())
 
@@ -24,34 +24,19 @@ def create_text_rag(file_path: str):
     # 3. Get the vector store ready
     index_name = 'memoq-test'
     vector_store = pinecone_store.insert_or_fetch_embeddings(index_name, chunks)
-
-    # 4. Load the pre-defined rag prompt from langchain hub
-    prompt = hub.pull("rlm/rag-prompt")
     
-    # 5. create the retriever, setting k=3, adjust as appropriate
+    # 4. create the retriever, setting k=3, adjust as appropriate
     retriever = vector_store.as_retriever(
         search_type="similarity",
         search_kwargs={"k": 3}
     )
-
-    # 6. create the LLM
+    
+    # 5. define the llm
     llm = ChatOpenAI(model="gpt-4o")
 
-    # 7. create a function to combine all documents into a single string, to be used in the chain
-    def format_docs(docs):
-        '''
-        This function combines the content of all provided documents into one string,
-        with each document's content separated by two newline characters.
-        '''
-        return "\n\n".join(doc.page_content for doc in docs)
+    # 6. use single Q & A
+    rag_chain = conversational_chain.conversational_rag(retriever, llm)
     
-    # 8. Use LCEL Runnable protocol to define the chain
-    rag_chain = (
-        {"context": retriever | format_docs, "question": RunnablePassthrough()}
-        | prompt
-        | llm
-        | StrOutputParser()
-    )
 
     return rag_chain
 
@@ -59,5 +44,58 @@ if __name__ == "__main__":
     file_path = "data/memoQ_troubleshoot.txt"
     rag_chain = create_text_rag(file_path)
 
-    for chunk in rag_chain.stream("My memoQ stopped working"):
-        print(chunk, end="", flush=True)
+    # for chunk in rag_chain.stream("My memoQ stopped working"):
+    #     print(chunk, end="", flush=True)
+
+    ### Testing conversational rag with two questions ###
+
+    chat_history = []
+
+    # question 1
+    question_1 = "my memoQ stopped working"
+    print(f"Human Question: {question_1}\n")
+
+    ai_msg_1 = rag_chain.invoke({"input": question_1, "chat_history": chat_history})
+    print(f"AI reponse: {ai_msg_1}\n\n")
+
+    # add AI response from question 1 into the history
+    chat_history.extend(
+        [
+            HumanMessage(content=question_1),
+            AIMessage(content=ai_msg_1),
+        ]
+    )
+
+    # question 2
+    question_2 = "are you sure?"
+    print(f"Human Question: {question_2}\n")
+
+    ai_msg_2 = rag_chain.invoke({"input": question_2, "chat_history": chat_history})
+
+    print(f"AI reponse: {ai_msg_2}\n\n")
+
+    # add AI response from question 2 into the history
+    chat_history.extend(
+        [
+            HumanMessage(content=question_2),
+            AIMessage(content=ai_msg_2),
+        ]
+    )
+
+    # question 3
+    question_3 = "I think you are wrong!"
+    print(f"Human Question: {question_3}\n")
+
+    ai_msg_3 = rag_chain.invoke({"input": question_3, "chat_history": chat_history})
+
+    print(f"AI reponse: {ai_msg_3}\n\n")
+
+    # add AI response from question 3 into the history
+    chat_history.extend(
+        [
+            HumanMessage(content=question_3),
+            AIMessage(content=ai_msg_3),
+        ]
+    )
+
+    print(chat_history)
