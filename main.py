@@ -5,7 +5,8 @@ from vector_db import pinecone_store
 from langchain_openai import ChatOpenAI
 from chains import conversational_chain
 from langchain_core.messages import AIMessage, HumanMessage
-
+import keyboard
+import time
 
 load_dotenv(find_dotenv())
 
@@ -47,55 +48,75 @@ if __name__ == "__main__":
     # for chunk in rag_chain.stream("My memoQ stopped working"):
     #     print(chunk, end="", flush=True)
 
-    ### Testing conversational rag with two questions ###
+    ### Testing conversational rag with continuous questions ###
 
     chat_history = []
 
-    # question 1
-    question_1 = "my memoQ stopped working"
-    print(f"Human Question: {question_1}\n")
+    iter = 1
 
-    ai_msg_1 = rag_chain.invoke({"input": question_1, "chat_history": chat_history})
-    print(f"AI reponse: {ai_msg_1}\n\n")
+    while not keyboard.is_pressed('esc'):
+        question = input("Ask a question: ")
+        print(f'{question}')
 
-    # add AI response from question 1 into the history
-    chat_history.extend(
+        ai_msg = rag_chain.invoke({"input": question, "chat_history": chat_history})
+        print(f"AI reponse: {ai_msg}\n\n")
+
+        chat_history.extend(
         [
-            HumanMessage(content=question_1),
-            AIMessage(content=ai_msg_1),
+            HumanMessage(content=question),
+            AIMessage(content=ai_msg),
         ]
-    )
-
-    # question 2
-    question_2 = "are you sure?"
-    print(f"Human Question: {question_2}\n")
-
-    ai_msg_2 = rag_chain.invoke({"input": question_2, "chat_history": chat_history})
-
-    print(f"AI reponse: {ai_msg_2}\n\n")
-
-    # add AI response from question 2 into the history
-    chat_history.extend(
-        [
-            HumanMessage(content=question_2),
-            AIMessage(content=ai_msg_2),
-        ]
-    )
-
-    # question 3
-    question_3 = "I think you are wrong!"
-    print(f"Human Question: {question_3}\n")
-
-    ai_msg_3 = rag_chain.invoke({"input": question_3, "chat_history": chat_history})
-
-    print(f"AI reponse: {ai_msg_3}\n\n")
-
-    # add AI response from question 3 into the history
-    chat_history.extend(
-        [
-            HumanMessage(content=question_3),
-            AIMessage(content=ai_msg_3),
-        ]
-    )
-
+        )
+            
     print(chat_history)
+    time.sleep(3)
+
+    ### Testing conversational rag with two questions ###
+    # question 1
+    # question_1 = "my memoQ stopped working"
+    # print(f"Human Question: {question_1}\n")
+
+    # ai_msg_1 = rag_chain.invoke({"input": question_1, "chat_history": chat_history})
+    # print(f"AI reponse: {ai_msg_1}\n\n")
+
+    # # add AI response from question 1 into the history
+    # chat_history.extend(
+    #     [
+    #         HumanMessage(content=question_1),
+    #         AIMessage(content=ai_msg_1),
+    #     ]
+    # )
+
+    # # question 2
+    # question_2 = "are you sure?"
+    # print(f"Human Question: {question_2}\n")
+
+    # ai_msg_2 = rag_chain.invoke({"input": question_2, "chat_history": chat_history})
+
+    # print(f"AI reponse: {ai_msg_2}\n\n")
+
+    # # add AI response from question 2 into the history
+    # chat_history.extend(
+    #     [
+    #         HumanMessage(content=question_2),
+    #         AIMessage(content=ai_msg_2),
+    #     ]
+    # )
+
+    # # question 3
+    # question_3 = "I think you are wrong!"
+    # print(f"Human Question: {question_3}\n")
+
+    # ai_msg_3 = rag_chain.invoke({"input": question_3, "chat_history": chat_history})
+
+    # print(f"AI reponse: {ai_msg_3}\n\n")
+
+    # # add AI response from question 3 into the history
+    # chat_history.extend(
+    #     [
+    #         HumanMessage(content=question_3),
+    #         AIMessage(content=ai_msg_3),
+    #     ]
+    # )
+
+    # print(chat_history)
