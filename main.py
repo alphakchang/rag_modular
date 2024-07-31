@@ -34,7 +34,7 @@ def create_text_rag(file_path: str):
     # 5. define the llm
     llm = ChatOpenAI(model="gpt-4o")
 
-    # 6. use single Q & A
+    # 6. create conversational rag chain
     rag_chain = conversational_chain.conversational_rag(retriever, llm)
     
 

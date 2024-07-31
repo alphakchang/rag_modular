@@ -6,7 +6,6 @@ langchainhub
 
 from langchain import hub
 from langchain.chains.history_aware_retriever import create_history_aware_retriever
-from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain_core.prompts import MessagesPlaceholder, ChatPromptTemplate
 from chains import basic_chain
 
@@ -19,7 +18,7 @@ def conversational_rag(retriever, llm):
     langchain vectorstore.as_retriever() object
 
     Returns:
-    RAG chain for single Q & A
+    RAG chain that takes chat history into account
     """
 
     # Load the pre-defined prompt for contextualization from langchain hub
