@@ -42,3 +42,16 @@ def insert_or_fetch_embeddings(collection_name: str, chunks: List[str]):
     vectorstore = Chroma.from_texts(docs_content, embeddings, None, None, collection_name)
 
     return vectorstore
+
+def query_vector_from_local_storage(collection_name: str):
+    """
+        Connects to a local DB and returns an instance of the Chroma database with the specified collection name and embeddings defined.
+    """
+
+    client = chromadb.PersistentClient(path="chroma_db")
+
+    embedding_function = OpenAIEmbeddings(model="text-embedding-3-small", dimensions=1536)
+
+    db = Chroma(client=client, collection_name=collection_name,embedding_function=embedding_function)
+
+    return db
