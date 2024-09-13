@@ -1,7 +1,7 @@
 from dotenv import load_dotenv, find_dotenv
 from content_loaders import pdf_loader
 from text_chunkers import character_chunker, semantic_chunker
-from vector_db import pinecone_store
+from vector_db import pinecone_store, chroma_store
 from langchain_openai import ChatOpenAI
 from chains import conversational_chain
 from langchain_core.messages import AIMessage, HumanMessage
@@ -15,17 +15,21 @@ def create_text_rag(file_path: str):
     Use this function to create a RAG from a text file.
     """
     # 1. Load the text file
-    with open(file_path, encoding="utf-8") as f:
-        text_file = f.read()
+    # with open(file_path, encoding="utf-8") as f:
+    #     text_file = f.read()
     
     # 2. Split the text semantically
-    chunks = semantic_chunker.semantic_split(text_file)
-    print(f"Successfully split into {len(chunks)} chunks.")
+    # chunks = semantic_chunker.semantic_split(text_file)
+    # print(f"Successfully split into {len(chunks)} chunks.")
 
-    # 3. Get the vector store ready
-    index_name = 'memoq-test'
-    vector_store = pinecone_store.insert_or_fetch_embeddings(index_name, chunks)
-    
+    # 3. Get the vector store ready using Pinecone by either creating or fetching a vector_store stored in Pinecone
+    # index_name = 'memoq-test'
+    # vector_store = pinecone_store.insert_or_fetch_embeddings(index_name, chunks)
+
+    #3.5 OR using Chroma DB using a persistent database that exists on-disk (in this example, the database resides in the chroma_db folder)
+    collection_name = "memoq-troubleshoot-test"
+    vector_store = chroma_store.query_vector_from_local_storage(collection_name)
+
     # 4. create the retriever, setting k=3, adjust as appropriate
     retriever = vector_store.as_retriever(
         search_type="similarity",
